@@ -1,36 +1,36 @@
 ﻿using UnityEngine;
 
-public class BuildingsGrid : MonoBehaviour
+public class BuildingGrid : MonoBehaviour
 {
-    public Vector2Int GridSize = new Vector2Int(10, 10);
+    [SerializeField]private Vector2Int GridSize = new Vector2Int(20, 20);
 
-    private Building[,] grid;
-    private Building flyingBuilding;
-    private Camera mainCamera;
+    public Building[,] _grid;
+    public Building _flyingBuilding;
+    public Camera _mainCamera;
     
     private void Awake()
     {
-        grid = new Building[GridSize.x, GridSize.y];
+        _grid = new Building[GridSize.x, GridSize.y];
         
-        mainCamera = Camera.main;
+        _mainCamera = Camera.main;
     }
 
     public void StartPlacingBuilding(Building buildingPrefab)
     {
-        if (flyingBuilding != null)
+        if (_flyingBuilding != null)
         {
-            Destroy(flyingBuilding.gameObject);
+            Destroy(_flyingBuilding.gameObject);
         }
         
-        flyingBuilding = Instantiate(buildingPrefab);
+        _flyingBuilding = Instantiate(buildingPrefab);
     }
 
     private void Update()
     {
-        if (flyingBuilding != null)
+        if (_flyingBuilding != null)
         {
             var groundPlane = new Plane(Vector3.up, Vector3.zero);
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
 
             if (groundPlane.Raycast(ray, out float position))
             {
@@ -41,13 +41,13 @@ public class BuildingsGrid : MonoBehaviour
 
                 bool available = true;
 
-                if (x < 0 || x > GridSize.x - flyingBuilding.Size.x) available = false;
-                if (y < 0 || y > GridSize.y - flyingBuilding.Size.y) available = false;
+                if (x < 0 || x > GridSize.x - _flyingBuilding.Size.x) available = false;
+                if (y < 0 || y > GridSize.y - _flyingBuilding.Size.y) available = false;
 
                 if (available && IsPlaceTaken(x, y)) available = false;
 
-                flyingBuilding.transform.position = new Vector3(x, 0, y);
-                flyingBuilding.SetTransparent(available);
+                _flyingBuilding.transform.position = new Vector3(x, 0, y);
+                _flyingBuilding.SetTransparent(available);
 
                 if (available && Input.GetMouseButtonDown(0))
                 {
@@ -59,11 +59,11 @@ public class BuildingsGrid : MonoBehaviour
 
     private bool IsPlaceTaken(int placeX, int placeY)
     {
-        for (int x = 0; x < flyingBuilding.Size.x; x++)
+        for (int x = 0; x < _flyingBuilding.Size.x; x++)
         {
-            for (int y = 0; y < flyingBuilding.Size.y; y++)
+            for (int y = 0; y < _flyingBuilding.Size.y; y++)
             {
-                if (grid[placeX + x, placeY + y] != null) return true;
+                if (_grid[placeX + x, placeY + y] != null) return true;
             }
         }
 
@@ -72,15 +72,15 @@ public class BuildingsGrid : MonoBehaviour
 
     private void PlaceFlyingBuilding(int placeX, int placeY)
     {
-        for (int x = 0; x < flyingBuilding.Size.x; x++)
+        for (int x = 0; x < _flyingBuilding.Size.x; x++)
         {
-            for (int y = 0; y < flyingBuilding.Size.y; y++)
+            for (int y = 0; y < _flyingBuilding.Size.y; y++)
             {
-                grid[placeX + x, placeY + y] = flyingBuilding;
+                _grid[placeX + x, placeY + y] = _flyingBuilding;
             }
         }
         
-        flyingBuilding.SetNormal();
-        flyingBuilding = null;
+        _flyingBuilding.SetNormal();
+        _flyingBuilding = null;
     }
 }
