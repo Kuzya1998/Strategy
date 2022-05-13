@@ -54,7 +54,7 @@ public class UnitSelections : MonoBehaviour
 
     
 
-    public void DeselectAll(GameObject unitToDeselect)
+    public void DeselectAll()
     {
         foreach (var unit in unitsSelected)
         {
